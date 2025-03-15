@@ -4,7 +4,7 @@
 면접용 정리 - 경어체로 작성<br>
 나만의 정리 - 평어체로 작성<br>
 
-
+이 글의 하이라이트는 맨 마지막에 있습니다
 
 
 ## 1. Spring Framework
@@ -232,18 +232,91 @@ Spring Batch에서 TransactionManager를 직접 설정했던 작업,<br>
 
 
 
-### AOP
+### 🔥 AOP 
 
-**AOP란?**
-- AOP란 비즈니스 로직에 공통적으로 적용되는 기능을 분리하여 관리하는 것을 뜻합니다.<br>
-  특히 인증, 로깅, 트랜잭션에서 유용합니다.
+AOP란 비즈니스 로직에 공통적으로 적용되는 기능을 분리하여 관리하는 것을 뜻한다.<br>
+특히 인증, 로깅, 트랜잭션에서 유용하다.
+
+구체적으로
+
+애플리케이션 로직은 **핵심 기능**과 **부가 기능**으로 나눌 수 있다.<br>
+그리고 부가 기능은 보통<br>
+여러 곳에서 동일하게 사용된다.<br>
+그리고 이를 횡단 관심사라고 한다.
+
+![Image](https://github.com/user-attachments/assets/19570869-0f24-4b67-bdff-2a89db0d90ee)
+
+사진에 있는 로그 추적 기능을 100개의 클래스에서 사용하면<br>
+100개의 클래스에 로그 추적 코드를 넣어야 한다.<br>
+그리고 로그 추적 기능을 변경한다면<br>
+100개의 클래스를 수정해야 한다.
+
+AOP는 이런 문제를 해결하기 위해 등장했다.<br>
+
+![Image](https://github.com/user-attachments/assets/3074b331-dcce-426a-9e0b-45bfee861ef0)
+
+
+<br>
+
+우선 Spring에서 AOP를 적용하는 방식을 **이론적으로** 알아보자.<br>
+지금은 용어 정리, 원리를 간단하게 파악하고<br>
+
+어노테이션에 대해 알아본 후<br>
+**실질적으로** 적용하는 것은 마지막에.<br>
 
 
 
+### AOP 적용 방식
+
+3가지 방식이 있다.
+- 컴파일 시점 (weaving)
+- 클래스 로딩 시점 (weaving)
+- 런타임 시점 (프록시)
+
+이것만 해도 방대한 양이고<br>
+완벽히 이해하지 못해서 결론만 적겠다.<br>
+
+AOP의 대표적인 구현으로 AspectJ 프레임워크가 있다.<br>
+그리고 컴파일 시점, 클래스 로딩 시점에 적용하는 AOP 방식은 AspectJ를 직접 사용해야 한다.<br>
+
+구체적으로 JAVA를 실행할때 복잡한 옵션을 걸어주거나<BR>
+클래스 로더 조작기를 설정해야한다.<br>
+(어렵다는 뜻)<br>
 
 
+Spring 컨테이너, DI, 프록시, bean post processor 개념을 모두 사용해<br>
+쉽게 사용할 수 있도록 만들어 놓은 것이 Spring AOP이고<br>
+프록시를 사용한 런타임 시점에 적용하는 방식을 사용한다.<BR>
+
+정확하게 AspectJ 문법을 차용하고, 프록시 방식으로 AOP를 적용한다.<br>
 
 
+![Image](https://github.com/user-attachments/assets/39fb5984-8725-4d5f-97c2-9463d5ed0dcb)
+![Image](https://github.com/user-attachments/assets/a1c8e3e8-da94-42be-8786-c3c36be9192c)
+
+
+결론은<br>
+쉽게 사용할 수 있도록 만들어 놓은거 쓰자.
+
+### Spring AOP 용어 정리
+
+
+![Image](https://github.com/user-attachments/assets/328b966f-c2bd-43e9-9d3e-e22e6007aa99)
+
+
+알아야 할것만 정리해 보면<br>
+- JoinPoint : 어드바이스가 적용될 수 있는 지점 (메서드 실행 지점)
+- Pointcut : JoinPoint 중 실제로 어드바이스가 적용되는 지점
+- Advice : 실제로 어드바이스가 하는 일<br>
+   커스텀 예외 처리 해봤으면 RestControllerAdvice를 본적이 있을거다
+
+
+어드바이스 종류
+- @Around: 메서드 호출 전후에 수행, 가장 강력한 어드바이스, 조인 포인트 실행 여부 선택, 반환 값 변환, 예외변환 등이 가능
+- @Before:: 조인 포인트 실행 이전에 실행
+- @AfterReturning: 조인 포인트가 정상 완료후 실행
+- @AfterThrowing: 메서드가 예외를 던지는 경우 실행
+- @After: 조인 포인트가 정상 또는 예외에 관계없이 실행(finally)
 
 ## 2. Spring Bean, Life Cycle
 
@@ -266,26 +339,40 @@ Bean Scope란?
     하지만 싱글톤은 객체를 한번만 생성하고 계속해서 사용하기 때문에 메모리를 효율적으로 사용할 수 있습니다
 
 
-## 3. Spring Annotation
+## 🔥 3. Spring Annotation
 
-코드에 부가적인 기능을 수행하도록 하는 기술.<br>
+annotation이란 코드에 부가적인 기능을 수행하도록 하는 기술.<br>
 Spring에서 다양한 설정을 간편하게 처리하는데,<br>
 주로 reflection, proxy패턴을 사용해 동작을 구현한다.
 
-Proxy는 AOP에서 살펴보았고,<br>
-reflection은 구체적인 클래스 타입을 알지 못해도<br>
-클래스 메서드, 타입, 변수에 접근하게 해주는 JAVA 기술이다.<br>
+프록시 패턴은<br>
+JPA 프록시 객체, 프록시 서버를 들어봤을 텐데 이와 비슷한 개념이다.<br>
+간단하게 가짜 참조, 즉 대리자를 이용하는 거라고 생각하면 될 듯.
 
-### Reflection
+reflection, proxy만 해도 너무 방대한 양이고<br>
+설명할 정도까지 이해를 못해서 넘어가겠다.
 
+### 커스텀 어노테이션
 
+```java
+@Target(ElementType.METHOD)
+@Retention(RetentionPolicy.RUNTIME)
+public @interface Trace {
 
+}
+```
 
-참고한 글<br>
-<https://cocoyong.tistory.com/entry/Spring-Reflection-%EA%B0%84%EB%8B%A8%ED%9E%88-%EC%95%8C%EC%95%84%EB%B3%B4%EA%B8%B0>
+@Target
+Annotation이 어디에 위치할 수 있는지 제한한다
+- ElementType.FIELD : 클래스의 필드에 적용
+- ElementType.METHOD : 메서드에 적용
+- ElementType.CONSTRUCTOR : 생성자에 적용
 
-
-
+@Retention
+Annotation의 유지 기간을 정의한다.
+- RetentionPolicy.SOURCE : runtime때 제거
+- RetentionPolicy.CLASS : (디폴트) 컴파일 후 .class 파일에 유지, runtime때 제거
+- RetentionPolicy.RUNTIME : runtime때 유지
 
 
 
@@ -293,4 +380,326 @@ reflection은 구체적인 클래스 타입을 알지 못해도<br>
 
 ## 4. Unit Test / Integration Test
 
+단위 테스트는 전체 코드 중 작은 부분을 테스트하는 것이다. <br>
+통합 테스트는 시스템들이 서로 어떻게 상호작용하고 제대로 작동하는지 테스트하는 것을 의미한다.
+
+실질적으로 어떻게 작성하는지 보자
+
+
+대부분 작성해본 테스트 코드가 Unit Test일거다.<br>
+test 환경 데이터베이스는 따로 설정하는 경우도 있고<br>
+Mock 객체를 사용하는 경우도 있고<br>
+데이터가 아직 안들어가 있다면 그냥 테스트를 돌리는 경우도 있다.
+
+개인적으로 테스트환경용<br>
+h2 인메모리 데이터베이스를 설정하는게 좋다고 생각한다.<br>
+![Image](https://github.com/user-attachments/assets/357f889c-9d46-44f2-8d05-57bf0acb72b0)<br>
+간단하게 테스트 쪽에도 환경변수 설정해주면 된다
+```java
+    @Test
+    @DisplayName("모든 로또 조회")
+    void findAllLottos() {
+        // given
+        Lotto lotto = new Lotto(Randoms.pickUniqueNumbersInRange(1, 45, 6));
+        // when
+        lottoRepository.addLotto(lotto);
+        // then
+        assertThat(lottoRepository.findAllLottos()).contains(lotto);
+        assertThat(lottoRepository.getLottoCount()).isEqualTo(1);
+
+    }
+```
+
+
+튜토리얼에 나온 코드가 통합 테스트이다.<br>
+mock request를 보내 응답을 확인
+```java
+@SpringBootTest
+@AutoConfigureMockMvc
+class HelloControllerTest {
+
+    @Autowired
+    private MockMvc mockMvc;
+
+    @Test
+    @DisplayName("HelloController 호출 시 Greetings 메세지 출력")
+    void getHello() throws Exception {
+        // given
+        // when
+        // then
+        mockMvc.perform(MockMvcRequestBuilders.get("/")
+                                .accept(MediaType.APPLICATION_JSON))
+                                .andExpect(status().isOk())
+                                .andExpect(content().string("Greetings from Spring Boot!"));
+
+    }
+
+}
+```
+
+## 5. 🔥 Spring AOP + Annotation 응용 🔥
+
+가상의 상황을 생각해 보고<br>
+그 상황을 해결하기 위해 AOP를 사용해 보자.
+
+### RETRY
+
+응답 처리 중<br>
+외부 API를 호출하는 로직 있다고 가정하자.<br>
+그런데 5번 요청 중 1번 꼴로 요청이 실패하면 어떻게 해결해야 할까?<br>
+
+~~그런 경험이 있는지 생각해보니<br>
+Open AI API를 사용할때 30번에 1번정도 실패했던 것 같다.<br>~~
+
+#### 문제상황 코딩
+
+5번에 한번 DB에 저장하는 작업이 실패
+```java
+@Repository
+public class ExamRepository {
+
+    private static int sequence = 0;
+    
+    public String save(String itemId) {
+        sequence++;
+        if (sequence % 5 == 0) {
+            throw new IllegalArgumentException("Invalid item id: " + itemId);
+        }
+        return "ok";
+    }
+
+}
+```
+```java
+@Service
+@RequiredArgsConstructor
+public class ExamService {
+
+    private final ExamRepository examRepository;
+
+    public void request(String itemId) {
+        examRepository.save(itemId);
+    }
+}
+```
+
+테스트 코드
+```java
+@SpringBootTest
+@Slf4j
+class ExamServiceTest {
+
+    @Autowired
+    ExamService examService;
+
+    @Test
+    void test(){
+        for (int i = 1; i < 6; i++) {
+            log.info("client request: {}", i);
+            examService.request("item" + i);
+        }
+    }
+
+}
+```
+
+![Image](https://github.com/user-attachments/assets/1329af92-c58e-4987-bca9-f0124cbdd91b)
+
+당연히 5번째 작업에서 실패한다
+
+#### 해결
+
+실패했을 경우<br>
+다시 시도하는 로직을 만들면 해결할 수 있을 것 같다.
+
+그리고 
+
+```java
+@Target(ElementType.METHOD)
+@Retention(RetentionPolicy.RUNTIME)
+public @interface Retry {
+
+    int value() default 3;
+
+}
+```
+
+```java
+@Slf4j
+@Aspect
+public class RetryAspect {
+
+    @Around("@annotation(retry)")
+    public Object doRetry(ProceedingJoinPoint joinPoint, Retry retry) throws Throwable {
+        log.info("[retry] {} retry: {}", joinPoint.getSignature(), retry);
+
+        int maxValue = retry.value();
+        Exception exceptionHolder = null;
+
+        for (int retryCount = 1; retryCount < maxValue; retryCount++) {
+            try {
+                log.info("[retry] trying {} times, Max retry: {}", retryCount, maxValue);
+                return joinPoint.proceed();
+            } catch (Exception e) {
+                exceptionHolder = e;
+            }
+        }
+        throw exceptionHolder;
+    }
+
+
+}
+```
+
+@Retry 추가
+```java
+@Repository
+public class ExamRepository {
+
+    private static int sequence = 0;
+
+
+    @Trace
+    @Retry(value = 4)
+    public String save(String itemId) {
+        sequence++;
+        if (sequence % 5 == 0) {
+            throw new IllegalArgumentException("Invalid item id: " + itemId);
+        }
+        return "ok";
+    }
+
+}
+```
+
+재시도 로직을 만들어서 성공<br>
+![Image](https://github.com/user-attachments/assets/3e731a94-850b-4219-834c-e3d628906f56)
+
+![Image](https://github.com/user-attachments/assets/43158bb5-503a-4a4f-bdf0-9a7857bf0354)
+
+실제 상황에서 꽤 유용할 것 같다.
+
+
+### 사용자 구분 LOGGING
+
+실제 운영 환경에서는<BR>
+동시에 요청이 오는데, 이때 로그는 순차적으로 쌓이지 않는다.
+
+![Image](https://github.com/user-attachments/assets/89d5f10e-1812-43be-ae2c-e4165f9a479a)
+
+이를 해결하기 위해 MDC를 사용할 수 있다. <br>
+MDC란 Mapped Diagnostic Context로<br>
+Map 형식을 사용해 클라이언트 특징적인 데이터를 저장하기 위한 메커니즘이다.
+
+추가적으로<br>
+Slf4j, logback 등 우리가 사용하는 로거에서 MDC를 지원한다.<BR>
+
+간단하게 코딩을 해보자
+MDC 설정 후 AOP 적용, 필터 적용 2가지 방법 모두 해보겠다.<BR>
+
+우선 출력 형식 설정<br>
+logback.xml
+```xml
+<configuration>
+    <appender name="consoleAppender" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>[%d{yyyy.MM.dd HH:mm:ss.SSS}] - [%-5level] - [%X{request_id}] - [%logger{5}] - %msg%n</pattern>
+        </encoder>
+    </appender>
+    <root level="info">
+        <appender-ref ref="consoleAppender"/>
+    </root>
+</configuration>
+
+```
+
+#### AOP 적용
+
+
+```java
+@Slf4j
+@Aspect
+@Component
+public class TestAspect {
+
+    @Pointcut("execution(* com.ceos21.spring_boot.controller.*.*(..))")
+    public void controllerAdvice() {
+
+    }
+
+    @Before("controllerAdvice()")
+    public void requestLogging(JoinPoint joinPoint) {
+        MDC.put("traceId", UUID.randomUUID().toString());
+
+        log.info("REQUEST TRACING_ID : {}", MDC.get("traceId"));
+    }
+
+    @AfterReturning(pointcut = "controllerAdvice()", returning = "result")
+    public void responseLogging(JoinPoint joinPoint, Object result) {
+        log.info("RESPONSE TRACING_ID : {}", MDC.get("traceId"));
+        MDC.clear();
+    }
+}
+
+```
+
+![Image](https://github.com/user-attachments/assets/fa5d6ef9-4e27-478e-be3a-18891d8f7b58)
+
+
+똑똑한 인텔리제이가 AOP advice를 적용했다고 알려준다.
+
+<br>
+
+
+적용 전
+![Image](https://github.com/user-attachments/assets/38d2688c-b349-41da-8903-e7e0a998cf68)
+
+
+
+적용 후 로그
+
+![Image](https://github.com/user-attachments/assets/b1bec33c-837a-4f39-ad3b-b5d80531d816)
+
+#### 필터 적용
+
+
+```java
+@Component
+@Order(Ordered.HIGHEST_PRECEDENCE)
+class MDCLoggingFilter implements Filter {
+
+
+    @Override
+    public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
+        final UUID uuid = UUID.randomUUID();
+        MDC.put("request_id", uuid.toString());
+        filterChain.doFilter(servletRequest, servletResponse);
+        MDC.clear();
+    }
+}
+```
+
+적용 후 로그
+![Image](https://github.com/user-attachments/assets/f689264a-484b-4b9d-83c9-d36de1306268)
+
+<br>
+
+#### 추가
+
+운영환경에서 Nginx를 많이 사용하는데<br>
+nginx 로그, tomcat 로그를 함께 봐야하는 경우가 많다.
+
+이때 동일한 request_id를 공유하면 로그 파악에 더 도움이 된다고 한다.<br>
+
+![Image](https://github.com/user-attachments/assets/1ca17a53-c823-4df9-b321-a70a83dfe1bc)
+
+
+참고<br>
+<https://dev-jwblog.tistory.com/126>
+
+https://0soo.tistory.com/246
+
+https://mangkyu.tistory.com/266
+
+<https://www.inflearn.com/course/%EC%8A%A4%ED%94%84%EB%A7%81-%ED%95%B5%EC%8B%AC-%EC%9B%90%EB%A6%AC-%EA%B3%A0%EA%B8%89%ED%8E%B8>
 
